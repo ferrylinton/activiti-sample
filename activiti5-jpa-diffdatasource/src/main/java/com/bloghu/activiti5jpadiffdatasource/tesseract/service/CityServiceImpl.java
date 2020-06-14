@@ -22,7 +22,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 import com.bloghu.activiti5jpadiffdatasource.tesseract.domain.City;
 import com.bloghu.activiti5jpadiffdatasource.tesseract.domain.HotelSummary;
@@ -47,10 +46,6 @@ class CityServiceImpl implements CityService {
 
 		Assert.notNull(criteria, "Criteria must not be null");
 		String name = criteria.getName();
-
-		if (!StringUtils.hasLength(name)) {
-			return this.cityRepository.findAll(null);
-		}
 
 		String country = "";
 		int splitPos = name.lastIndexOf(",");

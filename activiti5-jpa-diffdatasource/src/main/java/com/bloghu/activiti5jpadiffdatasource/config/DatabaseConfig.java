@@ -11,11 +11,9 @@ import org.activiti.spring.SpringAsyncExecutor;
 import org.activiti.spring.SpringProcessEngineConfiguration;
 import org.activiti.spring.boot.AbstractProcessEngineAutoConfiguration;
 import org.activiti.spring.boot.ActivitiProperties;
-import org.hibernate.jpa.boot.spi.EntityManagerFactoryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -26,17 +24,16 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import com.bloghu.activiti5jpadiffdatasource.tesseract.service.CityRepository;
 
 @Configuration
 public class DatabaseConfig {
@@ -44,6 +41,9 @@ public class DatabaseConfig {
 	@Autowired
 	@Qualifier("dataSource") 
 	private DataSource dataSource;
+
+	@Autowired
+	private CityRepository cityRepository;
 	
 	@Configuration
 	@EnableTransactionManagement
@@ -147,11 +147,15 @@ public class DatabaseConfig {
 	
 	@PostConstruct
 	protected void initialize() {
-		Resource initSchema = new ClassPathResource("import.sql");
-		ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
-	    databasePopulator.addScript(initSchema);
-	    databasePopulator.setContinueOnError(true);
-	    DatabasePopulatorUtils.execute(databasePopulator, dataSource);
+		long total = cityRepository.count();
+		
+		if(total == 0) {
+			Resource initSchema = new ClassPathResource("import.sql");
+			ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
+		    databasePopulator.addScript(initSchema);
+		    databasePopulator.setContinueOnError(true);
+		    DatabasePopulatorUtils.execute(databasePopulator, dataSource);
+		}
 	}
 
 }

@@ -18,11 +18,11 @@ package com.bloghu.activiti5jpadiffdatasource.tesseract.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.bloghu.activiti5jpadiffdatasource.tesseract.domain.City;
 
-interface CityRepository extends Repository<City, Long> {
+public interface CityRepository extends JpaRepository<City, Long> {
 
 	Page<City> findAll(Pageable pageable);
 
